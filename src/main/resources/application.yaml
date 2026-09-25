@@ -1,3 +1,16 @@
 spring:
   application:
     name: sobola_rent_backend
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false # do not keep the persistence context window open for so long
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+    validate-on-migrate: true
