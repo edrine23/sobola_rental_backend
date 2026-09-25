@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: sobola_rent_backend
