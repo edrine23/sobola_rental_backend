@@ -3,16 +3,10 @@
 --   users, user_roles, role_permission, credentials
 --   Depends on: V2 (roles, permissions, auth_providers)
 -- =========================================================================
-
--- Short, human-typeable lookup code (e.g. SBL-001000) used by landlords /
--- app code to find a user quickly -- without exposing the UUID PK.
-CREATE SEQUENCE IF NOT EXISTS platform_number_seq START 1000;
-
 -- ---------- USERS -----------
 CREATE TABLE IF NOT EXISTS users (
                                      id                         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                     platform_number            VARCHAR(20) NOT NULL
-                                                                                 DEFAULT ('SBL-' || lpad(nextval('platform_number_seq')::text, 6, '0')),
+                                     platform_number            VARCHAR(20) NOT NULL UNIQUE,
                                      first_name                 VARCHAR(100) NOT NULL,
                                      last_name                  VARCHAR(100) NOT NULL,
                                      date_of_birth               DATE,
@@ -61,8 +55,8 @@ CREATE TABLE IF NOT EXISTS credentials (
                                            user_id                UUID NOT NULL REFERENCES users(id),
                                            auth_provider_id       UUID NOT NULL REFERENCES auth_providers(id),
                                            password_hash          VARCHAR(255),              -- nullable: OAuth-only providers won't have one
-                                           status                 VARCHAR(20) NOT NULL DEFAULT 'active'
-                                               CHECK (status IN ('active', 'locked', 'disabled')),
+                                           status                 VARCHAR(20) NOT NULL DEFAULT 'ACTIVE'
+                                               CHECK (status IN ('ACTIVE', 'EXPIRED', 'REVOKED')),
                                            must_change_password   BOOLEAN NOT NULL DEFAULT FALSE,
                                            created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
                                            updated_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
